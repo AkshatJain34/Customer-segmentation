@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Customer Segmentation | Enterprise Intelligence Suite</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #030712;
+            --sidebar-bg: #090d1a;
+            --card-bg: #0e1326;
+            --card-hover: #161c36;
+            --border: #1f294d;
+            --border-hover: #2e3d7a;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --accent-glow: rgba(99, 102, 241, 0.25);
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.15);
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --purple: #a855f7;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg: #f8fafc;
+            --sidebar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --card-hover: #f1f5f9;
+            --border: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --accent: #4f46e5;
+            --accent-hover: #4338ca;
+            --accent-glow: rgba(79, 70, 229, 0.1);
+            --success: #059669;
+            --success-glow: rgba(5, 150, 105, 0.1);
+            --danger: #e11d48;
+            --warning: #d97706;
+            --info: #0891b2;
+            --purple: #9333ea;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            transition: var(--transition);
+        }
+
+        /* Sidebar Styling */
+        aside {
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .brand-logo i {
+            color: #ffffff;
+            font-size: 18px;
+        }
+
+        .brand-text h2 {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text span {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        /* Controls inside sidebar */
+        .sidebar-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border-top: 1px solid var(--border);
+            padding-top: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            background: var(--bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        select:focus, input[type="text"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .slider-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge-k {
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            color: #ffffff;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        /* Main Content Container */
+        main {
+            padding: 32px 40px;
+            overflow-y: auto;
+            max-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header-title p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        /* Status & Button Badges */
+        .api-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border);
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse 1.8s infinite;
+        }
+
+        .dot.offline {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--danger);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.8; }
+            50% { transform: scale(1.25); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.8; }
+        }
+
+        .btn {
+            background: var(--sidebar-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-1px);
+            background: var(--card-bg);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border: none;
+            color: #ffffff;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 6px 20px var(--accent-glow);
+            color: #ffffff;
+        }
+
+        /* Grid System */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            background: var(--sidebar-bg);
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            font-weight: 700;
+        }
+
+        .stat-val {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .stat-desc {
+            font-size: 11px;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Analytics Section Layout */
+        .analysis-mesh {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .col-span-2, .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-lg { height: 350px; }
+        .chart-md { height: 260px; }
+
+        /* Filter Section Pills */
+        .filter-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pill.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .dot-marker {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* Persona & Insights list */
+        .insights-mesh {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 290px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        .insight-tile {
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .insight-tile:hover {
+            border-color: var(--border-hover);
+        }
+
+        .insight-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .insight-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .insight-meta {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .insight-stats {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .insight-tip {
+            font-size: 12px;
+            background: rgba(99, 102, 241, 0.08);
+            border-radius: 6px;
+            padding: 8px 12px;
+            border-left: 2px solid var(--accent);
+        }
+
+        /* Tables & Database View */
+        .database-wrap {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+        }
+
+        .search-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-container {
+            position: relative;
+            width: 320px;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .search-container input {
+            padding-left: 40px;
+        }
+
+        .scrollable-table {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--sidebar-bg);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 16px 24px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 14px 24px;
+            font-size: 13px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge-cluster {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-top: 10px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        #error-banner {
+            display: none;
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Menu Left -->
+    <aside>
+        <div class="brand">
+            <div class="brand-logo"><i class="fa-solid fa-earth-americas"></i></div>
+            <div class="brand-text">
+                <h2>Atlas Intel Suite</h2>
+                <span>Global Ops Portal</span>
+            </div>
+        </div>
+
+        <div class="sidebar-controls" style="border-top: none; padding-top: 0;">
+            <span class="nav-label">ML Configurations</span>
+            <div class="form-group">
+                <label for="algorithm-select">Model Engine</label>
+                <select id="algorithm-select">
+                    <option value="K-Means">K-Means Clustering</option>
+                    <option value="Hierarchical">Hierarchical (Ward.D2)</option>
+                </select>
+            </div>
+
+            <div class="slider-wrap">
+                <div class="slider-header">
+                    <span class="nav-label" style="margin-bottom:0;">Targets K</span>
+                    <span id="k-value" class="badge-k">5</span>
+                </div>
+                <input type="range" id="k-slider" min="2" max="10" value="5">
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Workspace Area Right -->
+    <main>
+        <div id="error-banner"><i class="fa-solid fa-triangle-exclamation"></i> R Backend connection offline. Please run "Rscript run_api.R" in your console.</div>
+
+        <header>
+            <div class="header-title">
+                <h1>Segmentation Dashboard</h1>
+                <p>Advanced cluster mapping &amp; deep persona generation for enterprise insights</p>
+            </div>
+
+            <div class="header-actions">
+                <div class="api-badge">
+                    <span id="api-dot" class="pulse"></span>
+                    <span id="api-text">Syncing...</span>
+                </div>
+                <button class="btn" id="theme-toggle"><i class="fa-solid fa-sun"></i> Light Mode</button>
+                <button class="btn btn-primary" id="export-btn"><i class="fa-solid fa-cloud-arrow-down"></i> Export Dataset (CSV)</button>
+            </div>
+        </header>
+
+        <!-- Dynamic KPIs Row -->
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <span class="stat-label">Dataset Base</span>
+                    <span class="stat-val" id="stat-customers">0</span>
+                    <span class="stat-desc" style="color:var(--text-muted);">Verified customers</span>
+                </div>
+                <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <span class="stat-label">Sub-Groups</span>
+                    <span class="stat-val" id="stat-clusters">5</span>
+                    <span class="stat-desc" id="stat-algo-label">K-Means Mode</span>
+                </div>
+                <div class="stat-icon"><i class="fa-solid fa-network-wired"></i></div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <span class="stat-label">Avg Ann. Income</span>
+                    <span class="stat-val" id="stat-income">$0.0k</span>
+                    <span class="stat-desc"><i class="fa-solid fa-caret-up"></i> Global index base</span>
+                </div>
+                <div class="stat-icon"><i class="fa-solid fa-wallet"></i></div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <span class="stat-label">Avg Spent Score</span>
+                    <span class="stat-val" id="stat-spending">0.0</span>
+                    <span class="stat-desc" style="color:var(--info);"><i class="fa-solid fa-scale-balanced"></i> Normal density</span>
+                </div>
+                <div class="stat-icon"><i class="fa-solid fa-ranking-star"></i></div>
+            </div>
+        </div>
+
+        <!-- Upper Metrics -->
+        <div class="analysis-mesh">
+            <div class="col-span-2">
+                <div class="card" style="background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:24px;">
+                    <div class="card-header">
+                        <h3>Distribution Analysis (Income vs Spending Scale)</h3>
+                        <div class="filter-list" id="cluster-filters"></div>
+                    </div>
+                    <div class="chart-lg">
+                        <canvas id="scatterChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card" style="background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:24px;">
+                    <div class="card-header">
+                        <h3>Statistical Segment Breakdown (Relative Benchmarks)</h3>
+                    </div>
+                    <div class="chart-md">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebars & insights charts -->
+            <div class="right-col">
+                <div class="card" style="background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:24px;">
+                    <div class="card-header">
+                        <h3>Operational Load Matrix</h3>
+                    </div>
+                    <div class="chart-md">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card" style="background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:24px; flex-grow:1; display:flex; flex-direction:column;">
+                    <div class="card-header" style="margin-bottom:12px;">
+                        <h3>Calculated Segment Personas</h3>
+                    </div>
+                    <div id="persona-list" class="insights-mesh"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Data Database Table Viewer -->
+        <div class="database-wrap">
+            <div class="search-field">
+                <h3>Customer Data Explorer</h3>
+                <div class="search-container">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="search-input" placeholder="Query ID, Age or Segment...">
+                </div>
+            </div>
+            <div class="scrollable-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User Identification</th>
+                            <th>Statistical Split</th>
+                            <th>Evaluated Persona Tag</th>
+                            <th>Current Age</th>
+                            <th>Annual Metric (K$)</th>
+                            <th>Assigned Spend Metric</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customer-table-body">
+                        <tr><td colspan="6">Establishing socket handshake...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            <span>&copy; 2026 Atlas Intelligence Suite &bull; Core Enterprise Operations</span>
+            <span>Platform Sync Code API Framework &amp; Web Services</span>
+        </footer>
+    </main>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8000/cluster";
+        const COLORS = [
+            "#6366f1", "#ec4899", "#14b8a6", "#f59e0b", "#3b82f6",
+            "#a855f7", "#f43f5e", "#10b981", "#06b6d4", "#f97316"
+        ];
+
+        let globalData = null;
+        let activeClusters = new Set();
+        let personaMap = {};
+        let scatterChart = null, barChart = null, pieChart = null;
+
+        const unwrap = (v) => Array.isArray(v) ? v[0] : v;
+
+        function getPersona(avgIncome, avgSpending) {
+            if (avgIncome >= 70 && avgSpending >= 60) {
+                return { label: "Elite Portfolio", tip: "Cross-offer with premium Tier 1 events & exclusive asset access." };
+            } else if (avgIncome >= 70 && avgSpending < 45) {
+                return { label: "Secure Conservative", tip: "Motivate metrics with loyalty multipliers & brand durability proof." };
+            } else if (avgIncome < 45 && avgSpending >= 60) {
+                return { label: "Agile Dynamic", tip: "Leverage time-bounded bundle drop alerts & real-time app flash pushes." };
+            } else if (avgIncome < 45 && avgSpending < 45) {
+                return { label: "Value-Led Essential", tip: "Focus on zero-friction transaction entry & discount package promos." };
+            }
+            return { label: "Core Equilibrium", tip: "Maintain broad baseline awareness with standard periodic touchpoints." };
+        }
+
+        function getThemeColors() {
+            const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+            return {
+                text: isDark ? "#94a3b8" : "#475569",
+                grid: isDark ? "rgba(31, 41, 77, 0.4)" : "rgba(148, 163, 184, 0.15)",
+                legend: isDark ? "#cbd5e1" : "#1e293b"
+            };
+        }
+
+        async function fetchClusterData() {
+            const algorithm = document.getElementById("algorithm-select").value;
+            const k = document.getElementById("k-slider").value;
+            const dot = document.getElementById("api-dot");
+            const apiText = document.getElementById("api-text");
+            const errBanner = document.getElementById("error-banner");
+
+            try {
+                const res = await fetch(`${API_URL}?algorithm=${encodeURIComponent(algorithm)}&k=${k}`);
+                if (!res.ok) throw new Error("API Error");
+                globalData = await res.json();
+
+                activeClusters = new Set(globalData.profiles.map(p => p.Cluster));
+
+                personaMap = {};
+                globalData.profiles.forEach(p => {
+                    personaMap[p.Cluster] = getPersona(p.avg_income, p.avg_spending);
+                });
+
+                dot.className = "pulse";
+                apiText.textContent = "API Live System";
+                errBanner.style.display = "none";
+
+                document.getElementById("stat-customers").textContent = unwrap(globalData.stats.total_customers).toLocaleString();
+                document.getElementById("stat-clusters").textContent = unwrap(globalData.stats.total_clusters);
+                document.getElementById("stat-algo-label").textContent = algorithm === "K-Means" ? "Partition Module" : "Connectivity Map";
+                document.getElementById("stat-income").textContent = "$" + unwrap(globalData.stats.avg_income).toFixed(1) + "k";
+                document.getElementById("stat-spending").textContent = unwrap(globalData.stats.avg_spending).toFixed(1);
+
+                buildClusterFilters();
+                renderAllVisuals();
+
+            } catch (err) {
+                dot.className = "dot offline";
+                apiText.textContent = "Core API Offline";
+                errBanner.style.display = "block";
+            }
+        }
+
+        function buildClusterFilters() {
+            const container = document.getElementById("cluster-filters");
+            container.innerHTML = "";
+
+            globalData.profiles.forEach(p => {
+                const color = COLORS[(p.Cluster - 1) % COLORS.length];
+                const pill = document.createElement("div");
+                pill.className = "pill active";
+                pill.innerHTML = `
+                    <span class="dot-marker" style="background:${color}"></span>
+                    <span>Segment ${p.Cluster}</span>
+                    <span style="opacity: 0.6; font-size:10px;">(${p.count})</span>
+                `;
+
+                pill.addEventListener("click", () => {
+                    if (activeClusters.has(p.Cluster)) {
+                        if (activeClusters.size > 1) {
+                            activeClusters.delete(p.Cluster);
+                            pill.classList.remove("active");
+                        }
+                    } else {
+                        activeClusters.add(p.Cluster);
+                        pill.classList.add("active");
+                    }
+                    renderAllVisuals();
+                });
+
+                container.appendChild(pill);
+            });
+        }
+
+        function renderAllVisuals() {
+            if (!globalData) return;
+            const filteredProfiles = globalData.profiles.filter(p => activeClusters.has(p.Cluster));
+            const filteredCustomers = globalData.customers.filter(c => activeClusters.has(c.cluster));
+
+            renderScatter(filteredCustomers);
+            renderBar(filteredProfiles);
+            renderDoughnut(filteredProfiles);
+            renderPersonas(filteredProfiles);
+            renderTable(filteredCustomers);
+        }
+
+        function renderScatter(customers) {
+            const theme = getThemeColors();
+            const datasets = [];
+
+            Array.from(activeClusters).sort((a, b) => a - b).forEach(clusterId => {
+                const pts = customers
+                    .filter(c => c.cluster === clusterId)
+                    .map(c => ({ x: c.income, y: c.score, id: c.id, age: c.age }));
+
+                datasets.push({
+                    label: `Segment ${clusterId} (${personaMap[clusterId].label})`,
+                    data: pts,
+                    backgroundColor: COLORS[(clusterId - 1) % COLORS.length],
+                    pointRadius: 4.5,
+                    pointHoverRadius: 7,
+                    borderColor: 'rgba(0,0,0,0.1)',
+                    borderWidth: 1
+                });
+            });
+
+            if (scatterChart) scatterChart.destroy();
+            scatterChart = new Chart(document.getElementById("scatterChart"), {
+                type: "scatter",
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: theme.legend, usePointStyle: true, font: { weight: 600 } } },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleFont: { family: 'Plus Jakarta Sans' },
+                            bodyFont: { family: 'Plus Jakarta Sans' },
+                            callbacks: {
+                                label: (ctx) => {
+                                    const p = ctx.raw;
+                                    return `ID: #${p.id} (Age ${p.age}) - Income: $${p.x}k, Score: ${p.y}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: "Annual Income Scale (k$)", color: theme.legend, font: { weight: 600 } },
+                            ticks: { color: theme.text },
+                            grid: { color: theme.grid }
+                        },
+                        y: {
+                            title: { display: true, text: "Assigned Spending Tier (1-100)", color: theme.legend, font: { weight: 600 } },
+                            ticks: { color: theme.text },
+                            grid: { color: theme.grid }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderBar(profiles) {
+            const theme = getThemeColors();
+            if (barChart) barChart.destroy();
+
+            barChart = new Chart(document.getElementById("barChart"), {
+                type: "bar",
+                data: {
+                    labels: profiles.map(p => `Segment ${p.Cluster}`),
+                    datasets: [
+                        { label: "Avg Ann Income (k$)", data: profiles.map(p => p.avg_income), backgroundColor: "#6366f1", borderRadius: 4 },
+                        { label: "Avg Spent Score", data: profiles.map(p => p.avg_spending), backgroundColor: "#ec4899", borderRadius: 4 },
+                        { label: "Avg Age Group", data: profiles.map(p => p.avg_age), backgroundColor: "#14b8a6", borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: theme.legend, font: { weight: 600 } } } },
+                    scales: {
+                        x: { ticks: { color: theme.text }, grid: { display: false } },
+                        y: { ticks: { color: theme.text }, grid: { color: theme.grid } }
+                    }
+                }
+            });
+        }
+
+        function renderDoughnut(profiles) {
+            const theme = getThemeColors();
+            if (pieChart) pieChart.destroy();
+
+            pieChart = new Chart(document.getElementById("pieChart"), {
+                type: "doughnut",
+                data: {
+                    labels: profiles.map(p => `Segment ${p.Cluster}`),
+                    datasets: [{
+                        data: profiles.map(p => p.count),
+                        backgroundColor: profiles.map(p => COLORS[(p.Cluster - 1) % COLORS.length]),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: "70%",
+                    plugins: { legend: { position: "bottom", labels: { color: theme.legend, usePointStyle: true, font: { weight: 600 } } } }
+                }
+            });
+        }
+
+        function renderPersonas(profiles) {
+            const box = document.getElementById("persona-list");
+            box.innerHTML = "";
+
+            profiles.forEach(p => {
+                const info = personaMap[p.Cluster];
+                const color = COLORS[(p.Cluster - 1) % COLORS.length];
+                const div = document.createElement("div");
+                div.className = "insight-tile";
+                div.style.borderLeftColor = color;
+                div.innerHTML = `
+                    <div class="insight-header">
+                        <span class="insight-title">Segment ${p.Cluster}: ${info.label}</span>
+                        <span class="insight-meta">${p.count} Active Users</span>
+                    </div>
+                    <div class="insight-stats">Average Income: $${p.avg_income}k &bull; Spend Index: ${p.avg_spending} &bull; Age Density: ${p.avg_age}yrs</div>
+                    <div class="insight-tip"><strong>Tactical Action:</strong> ${info.tip}</div>
+                `;
+                box.appendChild(div);
+            });
+        }
+
+        function renderTable(customers) {
+            const query = document.getElementById("search-input").value.trim().toLowerCase();
+            const tbody = document.getElementById("customer-table-body");
+            tbody.innerHTML = "";
+
+            const rows = customers
+                .filter(c => !query || String(c.id).includes(query) || String(c.age).includes(query) || `segment ${c.cluster}`.includes(query))
+                .slice(0, 100);
+
+            if (rows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding: 40px;">No matching records present in target system segment database.</td></tr>`;
+                return;
+            }
+
+            rows.forEach(c => {
+                const color = COLORS[(c.cluster - 1) % COLORS.length];
+                const persona = personaMap[c.cluster]?.label || "-";
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>USR-${c.id}</strong></td>
+                        <td><span class="badge-cluster" style="background:${color}">Segment ${c.cluster}</span></td>
+                        <td><strong>${persona}</strong></td>
+                        <td>${c.age}</td>
+                        <td>$${c.income.toFixed(1)}k</td>
+                        <td>${c.score.toFixed(0)} / 100</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // CSV Export Data Form
+        document.getElementById("export-btn").addEventListener("click", () => {
+            if (!globalData) return;
+            const filtered = globalData.customers.filter(c => activeClusters.has(c.cluster));
+            let csv = "CustomerID,Age,Annual_Income_k,Spending_Score,Cluster,Persona\n";
+            filtered.forEach(c => {
+                csv += `${c.id},${c.age},${c.income},${c.score},${c.cluster},"${personaMap[c.cluster].label}"\n`;
+            });
+            const blob = new Blob([csv], { type: "text/csv" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "global_customer_segmentation.csv";
+            a.click();
+        });
+
+        // Interface Dark/Light Mode
+        document.getElementById("theme-toggle").addEventListener("click", (e) => {
+            const html = document.documentElement;
+            const isDark = html.getAttribute("data-theme") === "dark";
+            html.setAttribute("data-theme", isDark ? "light" : "dark");
+            e.currentTarget.innerHTML = isDark ? '<i class="fa-solid fa-moon"></i> Dark Mode' : '<i class="fa-solid fa-sun"></i> Light Mode';
+            renderAllVisuals();
+        });
+
+        // User Interface Handlers
+        document.getElementById("algorithm-select").addEventListener("change", fetchClusterData);
+        document.getElementById("k-slider").addEventListener("input", (e) => {
+            document.getElementById("k-value").textContent = e.target.value;
+            fetchClusterData();
+        });
+        document.getElementById("search-input").addEventListener("input", () => {
+            if (globalData) {
+                const filtered = globalData.customers.filter(c => activeClusters.has(c.cluster));
+                renderTable(filtered);
+            }
+        });
+
+        // Dashboard Handshake Trigger
+        fetchClusterData();
+    </script>
+
+</body>
+</html>
